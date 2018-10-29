@@ -41,10 +41,6 @@ var origin = {
 
 // Some ugly vars
 var opera12maxScrollbarSize = 17
-// I hate you https://github.com/Diokuz/baron/issues/110
-var macmsxffScrollbarSize = 15
-var macosxffRe = /[\s\S]*Macintosh[\s\S]*\) Gecko[\s\S]*/
-var isMacFF = macosxffRe.test(scopedWindow.navigator && scopedWindow.navigator.userAgent)
 
 var log, liveBarons, shownErrors
 
@@ -592,12 +588,8 @@ baron.prototype = {
                 var padding = 0
                 var was, will
 
-                // https://github.com/Diokuz/baron/issues/110
-                if (isMacFF) {
-                    padding = macmsxffScrollbarSize
-
                 // Opera 12 bug https://github.com/Diokuz/baron/issues/105
-                } else if (client > 0 && offset === 0) {
+                if (client > 0 && offset === 0) {
                     // Only Opera 12 in some rare nested flexbox cases goes here
                     // Sorry guys for magic,
                     // but I dont want to create temporary html-nodes set
@@ -763,25 +755,6 @@ baron.prototype = {
 
         // onInit actions
         this._dumbCss(true)
-
-        if (isMacFF) {
-            var padding = 'paddingRight'
-            var styles = {}
-            // getComputedStyle is ie9+, but we here only in f ff
-            var paddingWas = scopedWindow.getComputedStyle(this.scroller)[[padding]]
-
-            if (params.direction == 'h') {
-                padding = 'paddingBottom'
-            } else if (params.rtl) {
-                padding = 'paddingLeft'
-            }
-
-            var numWas = parseInt(paddingWas, 10)
-
-            if (numWas != numWas) numWas = 0
-            styles[padding] = (macmsxffScrollbarSize + numWas) + 'px'
-            css(this.scroller, styles)
-        }
 
         return this
     },
